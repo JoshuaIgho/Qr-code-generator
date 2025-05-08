@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusQR | Futuristic QR Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen relative">
+    <!-- Animated background particles -->
+    <div id="particles"></div>
+    
+    <!-- Main content -->
+    <div class="container mx-auto px-4 py-12 relative z-10">
+        <header class="text-center mb-12 slide-in">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 gradient-text">NexusQR</h1>
+            <p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto">
+                Generate futuristic QR codes with dynamic customization and real-time preview
+            </p>
+        </header>
+        
+        <div class="flex flex-col lg:flex-row gap-8 items-center justify-center">
+            <!-- QR Code Generator Form -->
+            <div class="w-full lg:w-1/2 bg-black bg-opacity-30 backdrop-blur-lg rounded-xl p-6 border border-gray-800 glow-hover transition-all duration-300 slide-in" style="animation-delay: 0.2s;">
+                <h2 class="text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-cog mr-3 text-blue-400"></i>
+                    <span class="gradient-text">Customization Panel</span>
+                </h2>
+                
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2 text-gray-300">URL or Text</label>
+                        <input type="text" id="qr-content" placeholder="https://example.com"
+                               class="w-full px-4 py-3 rounded-lg input-field text-white focus:outline-none">
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">QR Color</label>
+                            <input type="color" id="qr-color" value="#00f0ff"
+                                   class="w-full h-12 cursor-pointer bg-transparent border-none">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Background Color</label>
+                            <input type="color" id="bg-color" value="#0a0a1a"
+                                   class="w-full h-12 cursor-pointer bg-transparent border-none">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2 text-gray-300">QR Style</label>
+                        <div class="flex gap-4">
+                            <button id="style-dots" class="px-4 py-2 rounded-lg bg-blue-900 bg-opacity-50 border border-blue-700 text-white hover:bg-blue-800 transition active:scale-95">
+                                Dots
+                            </button>
+                            <button id="style-squares" class="px-4 py-2 rounded-lg bg-gray-800 bg-opacity-50 border border-gray-700 text-white hover:bg-gray-700 transition active:scale-95">
+                                Squares
+                            </button>
+                            <button id="style-rounded" class="px-4 py-2 rounded-lg bg-gray-800 bg-opacity-50 border border-gray-700 text-white hover:bg-gray-700 transition active:scale-95">
+                                Rounded
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Eye Style</label>
+                            <select id="eye-style" class="w-full px-4 py-3 rounded-lg input-field text-white focus:outline-none">
+                                <option value="square">Square</option>
+                                <option value="circle">Circle</option>
+                                <option value="pointed">Pointed</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Error Correction</label>
+                            <select id="error-correction" class="w-full px-4 py-3 rounded-lg input-field text-white focus:outline-none">
+                                <option value="L">Low (7%)</option>
+                                <option value="M" selected>Medium (15%)</option>
+                                <option value="Q">Quartile (25%)</option>
+                                <option value="H">High (30%)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <label class="block text-sm font-medium mr-3 text-gray-300">Add Logo</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="logo-toggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div id="logo-upload-container" class="hidden">
+                            <input type="file" id="logo-upload" accept="image/*" class="hidden">
+                            <label for="logo-upload" class="px-4 py-2 rounded-lg bg-purple-900 bg-opacity-50 border border-purple-700 text-white hover:bg-purple-800 transition cursor-pointer">
+                                Choose Logo
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button id="generate-btn" class="w-full py-3 px-6 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg text-white font-medium hover:opacity-90 transition active:scale-95 flex items-center justify-center">
+                        <i class="fas fa-bolt mr-2"></i>
+                        Generate QR Code
+                    </button>
+                </div>
+            </div>
+            
+            <!-- QR Code Preview -->
+            <div class="w-full lg:w-1/2 flex flex-col items-center slide-in" style="animation-delay: 0.4s;">
+                <div class="relative mb-8">
+                    <div id="qr-preview-container" class="qr-container bg-white p-4 rounded-lg glow floating transition-all duration-500">
+                        <canvas id="qr-preview" width="250" height="250" class="w-full h-auto"></canvas>
+                    </div>
+                    <div id="qr-loading" class="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center rounded-lg hidden">
+                        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <h3 class="text-xl font-bold mb-2 gradient-text">Your QR Code</h3>
+                    <p class="text-gray-300 mb-4">Scan the code or download it below</p>
+                    
+                    <div class="flex gap-4 justify-center">
+                        <button id="download-png" class="px-4 py-2 rounded-lg bg-gray-800 bg-opacity-50 border border-gray-700 text-white hover:bg-gray-700 transition flex items-center">
+                            <i class="fas fa-download mr-2"></i> PNG
+                        </button>
+                        <button id="download-svg" class="px-4 py-2 rounded-lg bg-gray-800 bg-opacity-50 border border-gray-700 text-white hover:bg-gray-700 transition flex items-center">
+                            <i class="fas fa-download mr-2"></i> SVG
+                        </button>
+                        <button id="share-btn" class="px-4 py-2 rounded-lg bg-blue-900 bg-opacity-50 border border-blue-700 text-white hover:bg-blue-800 transition flex items-center">
+                            <i class="fas fa-share-alt mr-2"></i> Share
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Features Section -->
+        <div class="mt-20 text-center slide-in" style="animation-delay: 0.6s;">
+            <h2 class="text-3xl font-bold mb-8 gradient-text">Why Choose NexusQR?</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <div class="bg-gray-900 bg-opacity-50 p-6 rounded-xl border border-gray-800 hover:border-blue-500 transition glow-hover">
+                    <div class="text-blue-400 text-4xl mb-4">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Lightning Fast</h3>
+                    <p class="text-gray-300">Generate QR codes instantly with our optimized engine</p>
+                </div>
+                
+                <div class="bg-gray-900 bg-opacity-50 p-6 rounded-xl border border-gray-800 hover:border-purple-500 transition glow-hover">
+                    <div class="text-purple-400 text-4xl mb-4">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Endless Customization</h3>
+                    <p class="text-gray-300">Create unique QR codes that match your brand identity</p>
+                </div>
+                
+                <div class="bg-gray-900 bg-opacity-50 p-6 rounded-xl border border-gray-800 hover:border-green-500 transition glow-hover">
+                    <div class="text-green-400 text-4xl mb-4">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Secure & Reliable</h3>
+                    <p class="text-gray-300">Your data stays private - no server processing needed</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="py-6 text-center text-gray-400 text-sm slide-in" style="animation-delay: 0.8s;">
+        <p>© <span id="current-year"></span> NexusQR. All rights reserved. | <a href="#" class="hover:text-blue-400 transition">Privacy Policy</a> | <a href="#" class="hover:text-blue-400 transition">Terms</a></p>
+    </footer>
+    
+    <script src="./script.js"></script>
+</body>
+</html>
